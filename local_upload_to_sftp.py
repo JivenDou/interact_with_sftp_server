@@ -17,9 +17,10 @@ config = ConfigParser()
 config.read(r'./config.ini', encoding='utf-8')
 
 
-def upload_file(sftp_c, local_f, remote_f) -> bool:
+def upload_file(sftp_c: SFTPClient, local_f: str, remote_f: str) -> bool:
     """
     上传、检查、删除文件
+
     :param sftp_c:sftp客户端类
     :param local_f:本地文件绝对路径
     :param remote_f:远端文件绝对路径
@@ -28,11 +29,13 @@ def upload_file(sftp_c, local_f, remote_f) -> bool:
     try:
         # 上传文件
         upload_r = sftp_c.upload_file(local_f, remote_f)
+        logger.info(f"[ {local_f} ] 上传成功!")
         # 比较本地文件和远端文件
         compare_r = sftp_c.compare_files(local_f, remote_f)
         if upload_r and compare_r == "=":
             # 若成功上传并且本地文件和远程文件一样则删除本地文件
-            sftp_c.delete_local_file(local_file)
+            sftp_c.delete_local_file(local_f)
+            logger.info(f"删除本地文件 [ {local_f} ]")
             return True
         else:
             logger.error("上传失败")
@@ -48,11 +51,11 @@ if __name__ == '__main__':
     logging.config.dictConfig(LOGGING_CONFIG)  # logging config使能输出
 
     # 读取配置文件
-    local_path = config['path']['local_path']
-    remote_path = config['path']['remote_path']
     hostname = config['sftp_server']['hostname']
     username = config['sftp_server']['username']
     password = config['sftp_server']['password']
+    local_path = config['upload']['local_path']
+    remote_path = config['upload']['remote_path']
     file_layout = config['upload']['file_layout']
     time_interval = int(config['upload']['time_interval'])
 
@@ -62,7 +65,9 @@ if __name__ == '__main__':
         try:
             # 查询本地已有的压缩包
             all_files = os.listdir(local_path)
-            if all_files:
+            # 检查远程目录是否存在
+            path_res = sftp_client.check_remote_path_exists(remote_path)
+            if all_files and path_res:
                 for file in all_files:
                     # 检查文件格式
                     if not file.endswith(file_layout):
@@ -80,17 +85,24 @@ if __name__ == '__main__':
                         if compare_res == ">":
                             logger.info(f"开始重传 [ {local_file} ]")
                             sftp_client.delete_remote_file(remote_file)
+                            logger.info(f"删除远程文件 [ {remote_file} ]")
                             upload_res = upload_file(sftp_client, local_file, remote_file)
                         else:
                             logger.info(f"[ {remote_path} ] 中已存在 [ {file} ] 文件")
                             sftp_client.delete_local_file(local_file)
+                            logger.info(f"删除本地文件 [ {local_file} ]")
                             continue
                     else:
                         upload_res = upload_file(sftp_client, local_file, remote_file)
                     logger.info("-------------------------------------------")
                     time.sleep(time_interval)
+            elif not path_res:
+                logger.warning(f"远程目标路径[ {remote_path} ]不存在，开始创建远程文件:")
+                # 创建远程文件夹
+                mkdir_res = sftp_client.make_remote_dir(remote_path)
+                logger.info('远程文件夹创建成功！' if mkdir_res else '远程文件夹已存在')
             else:
-                logger.warning("无本地文件")
+                logger.warning("本地无文件")
             logger.info("===================================================================")
             time.sleep(time_interval)
         except Exception as e:
