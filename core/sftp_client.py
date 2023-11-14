@@ -33,10 +33,10 @@ class SFTPClient:
             username: str,
             password: str,
             port: int = 22,
-            timeout: int = 60,
+            keep_alive: int = 60,
             private_key_path: str = None
     ):
-        self.timeout = timeout
+        self.keep_alive = keep_alive
         self.hostname = hostname
         self.port = port
         self.username = username
@@ -56,12 +56,12 @@ class SFTPClient:
 
             self.transport = paramiko.Transport((self.hostname, self.port))
             if self.password:
+                self.transport.set_keepalive(self.keep_alive)
                 self.transport.connect(username=self.username, password=self.password)
-                self.transport.set_keepalive(self.timeout)
             else:
                 private_key = paramiko.RSAKey.from_private_key_file(self.private_key_path)
+                self.transport.set_keepalive(self.keep_alive)
                 self.transport.connect(username=self.username, pkey=private_key)
-                self.transport.set_keepalive(self.timeout)
             self.sftp = paramiko.SFTPClient.from_transport(self.transport)
             logger.info("连接SFTP服务器成功!!")
         except Exception as e:
@@ -80,9 +80,11 @@ class SFTPClient:
             try:
                 self.transport = paramiko.Transport((self.hostname, self.port))
                 if self.password:
+                    self.transport.set_keepalive(self.keep_alive)
                     self.transport.connect(username=self.username, password=self.password)
                 else:
                     private_key = paramiko.RSAKey.from_private_key_file(self.private_key_path)
+                    self.transport.set_keepalive(self.keep_alive)
                     self.transport.connect(username=self.username, pkey=private_key)
                 self.sftp = paramiko.SFTPClient.from_transport(self.transport)
                 logger.info("连接SFTP服务器成功!")
