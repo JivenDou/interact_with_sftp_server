@@ -78,7 +78,7 @@ def main():
                             continue
                     else:
                         upload_file(sftp_client, local_file, remote_file)
-                    logger.info("-------------------------------------------")
+                    logger.info("--------------------------------------------------------------------------------------")
                     time.sleep(UPLOAD_TIME_INTERVAL)
                 logger.warning("本次上传完成, 30秒后再次扫描上传......")
             elif not path_res:
