@@ -14,7 +14,7 @@ from typing import List
 import paramiko
 from paramiko.ssh_exception import SSHException
 
-from logging_config import sftp_client as logger
+from logging_config import sftp_client as logger, download_log as download_logger, upload_log as upload_logger
 
 
 class SFTPClient:
@@ -45,6 +45,10 @@ class SFTPClient:
         self.transport = None
         self.sftp = None
         self.system = sys.platform  # win32 / linux
+        self.upload_now = None
+        self.download_now = None
+        # 上传下载进度输出频次, 范围：1~5, 1最快 5最慢
+        self.process_print_frequency = 3
 
     def connect(self):
         """开始连接SFTP服务器"""
@@ -113,7 +117,11 @@ class SFTPClient:
         :return:是否成功
         """
         try:
-            self.sftp.put(local_file, remote_file)
+            upload_logger.info(f"*********** 当前上传的文件是: [ {local_file} ] ***********")
+            self.upload_now = local_file
+            self.sftp.put(local_file, remote_file, callback=self.__print_upload_process)
+            upload_logger.info(f"*********** 文件上传完成: [ {local_file} ] ***********")
+            self.upload_now = None
             return True
         except SSHException as e:
             logger.error(f"{repr(e)}")
@@ -136,7 +144,12 @@ class SFTPClient:
                 remote_path = os.path.join(remote_dir, file)
                 # 根据传入的远程路径判断是否需要修改路径以契合远程服务器使用的系统
                 remote_path = self.format_remote_path(remote_path)
-                self.sftp.put(local_path, remote_path)
+                upload_logger.info(f"*********** 当前上传的文件是: [ {local_path} ] ***********")
+                self.upload_now = local_path
+                self.sftp.put(local_path, remote_path, callback=self.__print_upload_process)
+                upload_logger.info(f"*********** 文件上传完成: [ {local_path} ] ***********")
+                self.upload_now = None
+                upload_logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             return True
         except SSHException as e:
             logger.error(f"{repr(e)}")
@@ -144,6 +157,11 @@ class SFTPClient:
         except Exception as e:
             logger.error(f"{repr(e)}")
             return False
+
+    def __print_upload_process(self, transferred, total):
+        """输出上传进度回调函数"""
+        if transferred % (1024 * 1024 * self.process_print_frequency) == 0:
+            upload_logger.info(f"[ {self.upload_now} ]上传进度: {transferred} / {total}")
 
     def download_file(self, remote_file: str, local_file: str) -> bool:
         """
@@ -154,7 +172,11 @@ class SFTPClient:
         :return:是否成功
         """
         try:
-            self.sftp.get(remote_file, local_file)
+            download_logger.info(f"*********** 当前下载的文件是: [ {remote_file} ] ***********")
+            self.download_now = remote_file
+            self.sftp.get(remote_file, local_file, callback=self.__print_download_process)
+            download_logger.info(f"*********** 文件下载完成: [ {remote_file} ] ***********")
+            self.download_now = None
             return True
         except SSHException as e:
             logger.error(f"{repr(e)}")
@@ -177,7 +199,12 @@ class SFTPClient:
                 local_path = os.path.join(local_dir, file)
                 # 根据传入的远程路径判断是否需要修改路径以契合远程服务器使用的系统
                 remote_path = self.format_remote_path(remote_path)
-                self.sftp.get(remote_path, local_path)
+                download_logger.info(f"*********** 当前下载的文件是: [ {remote_path} ] ***********")
+                self.download_now = remote_path
+                self.sftp.get(remote_path, local_path, callback=self.__print_download_process)
+                download_logger.info(f"*********** 文件下载完成: [ {remote_path} ] ***********")
+                self.download_now = None
+                download_logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             return True
         except SSHException as e:
             logger.error(f"{repr(e)}")
@@ -185,6 +212,11 @@ class SFTPClient:
         except Exception as e:
             logger.error(f"{repr(e)}")
             return False
+
+    def __print_download_process(self, transferred, total):
+        """输出下载进度回调函数"""
+        if transferred % (1024 * 1024 * self.process_print_frequency) == 0:
+            download_logger.info(f"[ {self.download_now} ]下载进度: {transferred} / {total}")
 
     def compare_files(self, local_file: str, remote_file: str) -> str:
         """

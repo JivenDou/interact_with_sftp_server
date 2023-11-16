@@ -37,6 +37,18 @@ LOGGING_CONFIG = dict(
             "propagate": True,
             "qualname": "sftp_client.debug",
         },
+        "upload_log": {
+            "level": "INFO",
+            "handlers": ["console", "upload_log"],
+            "propagate": True,
+            "qualname": "upload_log.debug",
+        },
+        "download_log": {
+            "level": "INFO",
+            "handlers": ["console", "download_log"],
+            "propagate": True,
+            "qualname": "download_log.debug",
+        },
     },
     handlers={
         "console": {
@@ -80,6 +92,24 @@ LOGGING_CONFIG = dict(
             "backupCount": 10,
             "encoding": "utf-8"
         },
+        "upload_log": {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'log/upload_log/upload_log.log',
+            'maxBytes': 1024 * 1024,
+            'delay': True,
+            "formatter": "generic",
+            "backupCount": 10,
+            "encoding": "utf-8"
+        },
+        "download_log": {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'log/download_log/download_log.log',
+            'maxBytes': 1024 * 1024,
+            'delay': True,
+            "formatter": "generic",
+            "backupCount": 10,
+            "encoding": "utf-8"
+        },
     },
     formatters={
         # 自定义文件格式化器
@@ -94,7 +124,10 @@ LOGGING_CONFIG = dict(
 master = logging.getLogger("master")
 local_upload_to_sftp = logging.getLogger("local_upload_to_sftp")
 sftp_download_to_local = logging.getLogger("sftp_download_to_local")
+
 sftp_client = logging.getLogger("sftp_client")
+upload_log = logging.getLogger("upload_log")
+download_log = logging.getLogger("download_log")
 
 
 def create_log_folder():
