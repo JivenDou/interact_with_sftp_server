@@ -14,7 +14,7 @@ from typing import List
 import paramiko
 from paramiko.ssh_exception import SSHException
 
-from logging_config import sftp_client as logger, download_log as download_logger, upload_log as upload_logger
+from logging_config import sftp_client as logger, log_download as download_logger, log_upload as upload_logger
 
 
 class SFTPClient:

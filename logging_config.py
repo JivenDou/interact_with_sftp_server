@@ -37,17 +37,17 @@ LOGGING_CONFIG = dict(
             "propagate": True,
             "qualname": "sftp_client.debug",
         },
-        "upload_log": {
+        "log_upload": {
             "level": "INFO",
-            "handlers": ["console", "upload_log"],
+            "handlers": ["console", "log_upload"],
             "propagate": True,
-            "qualname": "upload_log.debug",
+            "qualname": "log_upload.debug",
         },
-        "download_log": {
+        "log_download": {
             "level": "INFO",
-            "handlers": ["console", "download_log"],
+            "handlers": ["console", "log_download"],
             "propagate": True,
-            "qualname": "download_log.debug",
+            "qualname": "log_download.debug",
         },
     },
     handlers={
@@ -92,18 +92,18 @@ LOGGING_CONFIG = dict(
             "backupCount": 10,
             "encoding": "utf-8"
         },
-        "upload_log": {
+        "log_upload": {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'log/upload_log/upload_log.log',
+            'filename': 'log/log_upload/log_upload.log',
             'maxBytes': 1024 * 1024,
             'delay': True,
             "formatter": "generic",
             "backupCount": 10,
             "encoding": "utf-8"
         },
-        "download_log": {
+        "log_download": {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'log/download_log/download_log.log',
+            'filename': 'log/log_download/log_download.log',
             'maxBytes': 1024 * 1024,
             'delay': True,
             "formatter": "generic",
@@ -126,8 +126,8 @@ local_upload_to_sftp = logging.getLogger("local_upload_to_sftp")
 sftp_download_to_local = logging.getLogger("sftp_download_to_local")
 
 sftp_client = logging.getLogger("sftp_client")
-upload_log = logging.getLogger("upload_log")
-download_log = logging.getLogger("download_log")
+log_upload = logging.getLogger("log_upload")
+log_download = logging.getLogger("log_download")
 
 
 def create_log_folder():
