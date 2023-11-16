@@ -80,6 +80,7 @@ def main():
                         upload_file(sftp_client, local_file, remote_file)
                     logger.info("-------------------------------------------")
                     time.sleep(UPLOAD_TIME_INTERVAL)
+                logger.warning("本次上传完成, 30秒后再次扫描上传......")
             elif not path_res:
                 try:
                     # logger.warning(f"远程目标路径[ {UPLOAD_REMOTE_PATH} ]不存在，开始创建远程文件夹:")
