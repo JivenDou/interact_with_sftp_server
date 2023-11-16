@@ -7,7 +7,7 @@
 import logging.config
 
 from core.Enum import RUN_MODE
-from logging_config import create_log_folder, LOGGING_CONFIG, master as logger
+from logging_config import create_log_folder, LOGGING_CONFIG, main as logger
 from local_upload_to_sftp import main as main_local_upload_to_sftp
 from sftp_download_to_local import main as main_sftp_download_to_local
 

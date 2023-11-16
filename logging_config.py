@@ -13,11 +13,11 @@ LOGGING_CONFIG = dict(
     version=1,
     disable_existing_loggers=False,
     loggers={
-        "master": {
+        "main": {
             "level": "INFO",
-            "handlers": ["console", "master"],
+            "handlers": ["console", "main"],
             "propagate": True,
-            "qualname": "master.debug",
+            "qualname": "main.debug",
         },
         "local_upload_to_sftp": {
             "level": "INFO",
@@ -56,9 +56,9 @@ LOGGING_CONFIG = dict(
             "formatter": "generic",
             "stream": sys.stdout,
         },
-        "master": {
+        "main": {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'log/master/master.log',
+            'filename': 'log/main/main.log',
             'maxBytes': 1024 * 1024,
             'delay': True,
             "formatter": "generic",
@@ -121,7 +121,7 @@ LOGGING_CONFIG = dict(
         }
     }
 )
-master = logging.getLogger("master")
+main = logging.getLogger("main")
 local_upload_to_sftp = logging.getLogger("local_upload_to_sftp")
 sftp_download_to_local = logging.getLogger("sftp_download_to_local")
 
