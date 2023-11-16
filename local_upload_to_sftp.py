@@ -83,10 +83,13 @@ def main():
                 logger.warning("本次上传完成, 30秒后再次扫描上传......")
             elif not path_res:
                 try:
-                    # logger.warning(f"远程目标路径[ {UPLOAD_REMOTE_PATH} ]不存在，开始创建远程文件夹:")
                     # 创建远程文件夹
                     mkdir_res = sftp_client.make_remote_dir(UPLOAD_REMOTE_PATH)
-                    logger.info('远程文件夹创建成功！' if mkdir_res else '远程文件夹已存在')
+                    if mkdir_res:
+                        logger.info(f'[ {UPLOAD_REMOTE_PATH} ] 远程文件夹创建成功！')
+                    else:
+                        logger.info(f'[ {UPLOAD_REMOTE_PATH} ] 远程文件夹已存在')
+                    continue
                 except FileNotFoundError:
                     logger.error(f"远程目标路径[ {UPLOAD_REMOTE_PATH} ]的父级文件夹不存在，请创建父级目录或重新确认目标路径是否有误")
                     break
