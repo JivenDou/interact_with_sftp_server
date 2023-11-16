@@ -13,14 +13,14 @@ config.read(r'./config.ini', encoding='utf-8')
 # HOSTNAME = config['sftp_server']['hostname']
 # USERNAME = config['sftp_server']['username']
 # PASSWORD = config['sftp_server']['password']
-HOSTNAME = "192.168.1.68"
-USERNAME = "sencott"
-PASSWORD = "sea12345"
+# HOSTNAME = "192.168.1.68"
+# USERNAME = "sencott"
+# PASSWORD = "sea12345"
 
 # 远程sftp服务器配置信息
-# HOSTNAME = "140.143.136.179"
-# USERNAME = "ftp_user_sencott"
-# PASSWORD = "7i)m@NnCG1wDr7i"
+HOSTNAME = "140.143.136.179"
+USERNAME = "sftp_sencott"
+PASSWORD = "7i)m@NnCG1wDr7i"
 # 运行模式
 RUN_MODE = int(config['mode']['run_mode'])
 # 上传配置信息
