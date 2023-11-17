@@ -98,7 +98,6 @@ def traversal_file(sftp_c: SFTPClient, local_p: str, remote_p: str, remote_path_
                         continue
                 else:
                     download_file(sftp_c, local_file, remote_file)
-            logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         return True
     except Exception as error:
         logger.error(error)

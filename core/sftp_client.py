@@ -371,7 +371,7 @@ class SFTPClient:
         :return: 该路径下所有文件及子目录所有文件的总列表，若没有文件则为空列表
         """
         try:
-            file_list = []
+            return_file_list = []
             # 检查远程目标路径是否存在
             if self.check_remote_path_exists(remote_path):
                 file_list = self.sftp.listdir_attr(remote_path)
@@ -382,11 +382,12 @@ class SFTPClient:
                         path = self.format_remote_path(path)
                         # 如果是子目录，则递归调用扫描子目录下的文件，加入列表
                         files = self.get_remote_file_list(path)
-                        file_list += files
+                        if files:
+                            return_file_list += files
                     else:
                         # 如果是文件，则加入列表
-                        file_list.append(item.filename)
-            return file_list
+                        return_file_list.append(item.filename)
+            return return_file_list
         except SSHException as e:
             logger.error(f"{repr(e)}")
             self.reconnect()
