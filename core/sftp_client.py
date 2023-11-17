@@ -124,7 +124,7 @@ class SFTPClient:
             self.upload_now = None
             return True
         except FileNotFoundError:
-            logger.error(f"文件未找到 | 本地:{local_file} 远程:{remote_file}")
+            logger.error(f"文件未找到\n本地:[ {local_file} ]\n远程:[ {remote_file} ]")
             return False
         except SSHException as e:
             logger.error(f"{repr(e)}")
@@ -155,7 +155,7 @@ class SFTPClient:
                 upload_logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             return True
         except FileNotFoundError:
-            logger.error(f"文件未找到 | 本地:{local_dir} 远程:{remote_dir}")
+            logger.error(f"文件未找到\n本地:[ {local_dir} ]\n远程:[ {remote_dir} ]")
             return False
         except SSHException as e:
             logger.error(f"{repr(e)}")
@@ -185,7 +185,7 @@ class SFTPClient:
             self.download_now = None
             return True
         except FileNotFoundError:
-            logger.error(f"文件未找到 | 本地:{local_file} 远程:{remote_file}")
+            logger.error(f"文件未找到\n本地:[ {local_file} ]\n远程:[ {remote_file} ]")
             return False
         except SSHException as e:
             logger.error(f"{repr(e)}")
@@ -216,7 +216,7 @@ class SFTPClient:
                 download_logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             return True
         except FileNotFoundError:
-            logger.error(f"文件未找到 | 本地:{local_dir} 远程:{remote_dir}")
+            logger.error(f"文件未找到\n本地:[ {local_dir} ]\n远程:[ {remote_dir} ]")
             return False
         except SSHException as e:
             logger.error(f"{repr(e)}")
@@ -253,6 +253,9 @@ class SFTPClient:
                 return "<"
             else:
                 return ""
+        except FileNotFoundError:
+            logger.error(f"文件未找到\n本地:[ {local_file} ]\n远程:[ {remote_file} ]")
+            return ""
         except SSHException as e:
             logger.error(f"{repr(e)}")
             self.reconnect()
