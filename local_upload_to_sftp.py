@@ -69,8 +69,6 @@ def main():
                         # 若本地文件大于远端文件，则删除远端文件进行重传，否则就删除本地文件
                         if compare_res == ">":
                             logger.info(f"开始重传 [ {local_file} ]")
-                            sftp_client.delete_remote_file(remote_file)
-                            logger.info(f"删除远程文件 [ {remote_file} ]")
                             upload_file(sftp_client, local_file, remote_file)
                         else:
                             logger.info(f"[ {UPLOAD_REMOTE_PATH} ] 中已存在 [ {file} ] 文件")
@@ -79,7 +77,7 @@ def main():
                             continue
                     else:
                         upload_file(sftp_client, local_file, remote_file)
-                    logger.info("--------------------------------------------------------------------------------------")
+                    logger.info(f"--------------------------{UPLOAD_TIME_INTERVAL}秒后上传下一个文件--------------------------")
                     time.sleep(UPLOAD_TIME_INTERVAL)
                 logger.warning("本次上传完成, 30秒后再次扫描上传......")
             elif not path_res:
