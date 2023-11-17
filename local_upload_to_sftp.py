@@ -49,6 +49,7 @@ def main():
         try:
             # 查询本地已有的压缩包
             all_files = os.listdir(UPLOAD_LOCAL_PATH)
+            all_files.sort()
             # 检查远程目录是否存在
             path_res = sftp_client.check_remote_path_exists(UPLOAD_REMOTE_PATH)
             if all_files and path_res:
