@@ -167,7 +167,7 @@ class SFTPClient:
     def __print_upload_process(self, transferred, total):
         """输出上传进度回调函数"""
         if transferred % (1024 * 1024 * self.process_print_frequency) == 0:
-            upload_logger.info(f"[ {self.upload_now} ]上传进度: {transferred} / {total}")
+            upload_logger.info(f"上传进度: {transferred} / {total}")
 
     def download_file(self, remote_file: str, local_file: str) -> bool:
         """
@@ -228,7 +228,7 @@ class SFTPClient:
     def __print_download_process(self, transferred, total):
         """输出下载进度回调函数"""
         if transferred % (1024 * 1024 * self.process_print_frequency) == 0:
-            download_logger.info(f"[ {self.download_now} ]下载进度: {transferred} / {total}")
+            download_logger.info(f"下载进度: {transferred} / {total}")
 
     def compare_files(self, local_file: str, remote_file: str) -> str:
         """
