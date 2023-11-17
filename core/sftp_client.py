@@ -147,7 +147,7 @@ class SFTPClient:
                 remote_path = os.path.join(remote_dir, file)
                 # 根据传入的远程路径判断是否需要修改路径以契合远程服务器使用的系统
                 remote_path = self.format_remote_path(remote_path)
-                upload_logger.info(f"[ -START- ] 当前上传的文件是: [ {local_path} ] 目标服务器是:  [ {remote_path} ] ")
+                upload_logger.info(f"[ -START- ] 当前上传的文件是: [ {local_path} ]")
                 self.upload_now = local_path
                 self.sftp.put(local_path, remote_path, callback=self.__print_upload_process)
                 upload_logger.info(f"[ -END- ] 文件上传完成: [ {local_path} ]")
@@ -178,7 +178,7 @@ class SFTPClient:
         :return:是否成功
         """
         try:
-            download_logger.info(f"[ -START- ] 当前下载的文件是: [ {remote_file} ] 目标服务器是:  [ {remote_file} ] ")
+            download_logger.info(f"[ -START- ] 当前下载的文件是: [ {remote_file} ]")
             self.download_now = remote_file
             self.sftp.get(remote_file, local_file, callback=self.__print_download_process)
             download_logger.info(f"[ -END- ] 文件下载完成: [ {remote_file} ]")
@@ -208,7 +208,7 @@ class SFTPClient:
                 local_path = os.path.join(local_dir, file)
                 # 根据传入的远程路径判断是否需要修改路径以契合远程服务器使用的系统
                 remote_path = self.format_remote_path(remote_path)
-                download_logger.info(f"[ -START- ] 当前下载的文件是: [ {remote_path} ] 目标服务器是:  [ {remote_path} ] ")
+                download_logger.info(f"[ -START- ] 当前下载的文件是: [ {remote_path} ]")
                 self.download_now = remote_path
                 self.sftp.get(remote_path, local_path, callback=self.__print_download_process)
                 download_logger.info(f"[ -END- ] 文件下载完成: [ {remote_path} ]")
