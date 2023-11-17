@@ -428,11 +428,12 @@ class SFTPClient:
         :param path:路径
         :return:格式化后的路径
         """
-        return_path = ""
         if "/" in path and self.system == "win32":
             return_path = path.replace("\\", "/")
         elif "\\" in path and self.system == "linux":
             return_path = path.replace("/", "\\")
+        else:
+            return_path = path
         return return_path
 
 
