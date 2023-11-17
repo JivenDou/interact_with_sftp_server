@@ -374,7 +374,9 @@ class SFTPClient:
             file_list = []
             # 检查远程目标路径是否存在
             if self.check_remote_path_exists(remote_path):
-                for item in self.sftp.listdir_attr(remote_path).sort():
+                file_list = self.sftp.listdir_attr(remote_path)
+                file_list_sorted = sorted(file_list, key=lambda x: x.filename)
+                for item in file_list_sorted:
                     if stat.S_ISDIR(item.st_mode):
                         path = os.path.join(remote_path, item.filename)
                         path = self.format_remote_path(path)
@@ -403,7 +405,9 @@ class SFTPClient:
             file_dict = {}
             # 检查远程目标路径是否存在
             if self.check_remote_path_exists(remote_path):
-                for item in self.sftp.listdir_attr(remote_path).sort():
+                file_list = self.sftp.listdir_attr(remote_path)
+                file_list_sorted = sorted(file_list, key=lambda x: x.filename)
+                for item in file_list_sorted:
                     if stat.S_ISDIR(item.st_mode):
                         path = os.path.join(remote_path, item.filename)
                         path = self.format_remote_path(path)
