@@ -5,6 +5,7 @@
 @Desc  : 主进程
 """
 import logging.config
+import time
 
 from core.Enum import RUN_MODE
 from logging_config import create_log_folder, LOGGING_CONFIG, main as logger
@@ -25,3 +26,4 @@ if __name__ == '__main__':
         main_sftp_download_to_local()
     else:
         logger.info("没有启用任何进程，请在配置文件中设置运行模式")
+        time.sleep(3)

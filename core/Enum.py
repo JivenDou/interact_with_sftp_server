@@ -22,7 +22,7 @@ HOSTNAME = "140.143.136.179"
 USERNAME = "sftp_sencott"
 PASSWORD = "7i)m@NnCG1wDr7i"
 # 运行模式
-RUN_MODE = int(config['mode']['run_mode'])
+RUN_MODE = int(config['main']['run_mode'])
 # 上传配置信息
 UPLOAD_LOCAL_PATH = config['upload']['local_path']
 UPLOAD_REMOTE_PATH = config['upload']['remote_path']
