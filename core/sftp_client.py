@@ -119,8 +119,10 @@ class SFTPClient:
         try:
             upload_logger.info(f"[ -START- ] 当前上传的文件是: [ {local_file} ]")
             self.upload_now = local_file
+            time_start = time.time()
             self.sftp.put(local_file, remote_file, callback=self.__print_upload_process)
-            upload_logger.info(f"[ -END- ] 文件上传完成: [ {local_file} ] ")
+            time_end = time.time()
+            upload_logger.info(f"[ -END- ] 文件上传完成(用时: {round(time_end-time_start, 0)}秒): [ {local_file} ] ")
             self.upload_now = None
             return True
         except FileNotFoundError:
@@ -180,8 +182,10 @@ class SFTPClient:
         try:
             download_logger.info(f"[ -START- ] 当前下载的文件是: [ {remote_file} ]")
             self.download_now = remote_file
+            time_start = time.time()
             self.sftp.get(remote_file, local_file, callback=self.__print_download_process)
-            download_logger.info(f"[ -END- ] 文件下载完成: [ {remote_file} ]")
+            time_end = time.time()
+            download_logger.info(f"[ -END- ] 文件下载完成(用时: {round(time_end-time_start, 0)}秒): [ {remote_file} ]")
             self.download_now = None
             return True
         except FileNotFoundError:

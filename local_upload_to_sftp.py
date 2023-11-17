@@ -79,7 +79,7 @@ def main():
                         upload_file(sftp_client, local_file, remote_file)
                     logger.info(f"--------------------------{UPLOAD_TIME_INTERVAL}秒后上传下一个文件--------------------------")
                     time.sleep(UPLOAD_TIME_INTERVAL)
-                logger.warning("本次上传完成, 30秒后再次扫描上传......")
+                logger.warning(f"本次上传完成, {UPLOAD_TIME_INTERVAL/2}秒后再次扫描上传......")
             elif not path_res:
                 try:
                     # 创建远程文件夹
@@ -93,9 +93,9 @@ def main():
                     logger.error(f"远程目标路径[ {UPLOAD_REMOTE_PATH} ]的父级文件夹不存在，请创建父级目录或重新确认目标路径是否有误")
                     break
             else:
-                logger.warning("本地无文件, 30秒后再次扫描上传......")
+                logger.warning(f"本地无文件, {UPLOAD_TIME_INTERVAL/2}秒后再次扫描上传......")
             logger.info("===================================================================")
-            time.sleep(30)
+            time.sleep(UPLOAD_TIME_INTERVAL/2)
         except Exception as e:
             logger.error(f"{repr(e)}")
             logger.info(f"将在5秒后重连服务器...")

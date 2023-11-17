@@ -88,8 +88,6 @@ def traversal_file(sftp_c: SFTPClient, local_p: str, remote_p: str, remote_path_
                     # 若本地文件小于远端文件，则删除本地文件进行重下，否则就删除远端文件
                     if compare_res == "<":
                         logger.info(f"开始重下 [ {remote_file} ]")
-                        sftp_c.delete_local_file(local_file)
-                        logger.info(f"删除本地文件 [ {local_file} ]")
                         download_file(sftp_c, local_file, remote_file)
                     else:
                         logger.info(f"[ {DOWNLOAD_LOCAL_PATH} ] 中已存在 [ {filename} ] 文件")
