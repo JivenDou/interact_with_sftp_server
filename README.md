@@ -10,6 +10,8 @@
 ├─local_upload_to_sftp.py（上传文件脚本）
 ├─logging_config.py（日志信息配置脚本）
 ├─main_sftp.py（主进程入口）
+├─README.md
+├─requirements.txt
 ├─sftp_download_to_local.py（下载文件脚本）
 ```
 
