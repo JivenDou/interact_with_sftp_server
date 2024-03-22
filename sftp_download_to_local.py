@@ -68,11 +68,11 @@ def traversal_file(sftp_c: SFTPClient, local_p: str, remote_p: str, remote_path_
                 # 遍历子目录
                 logger.info(f"开始下载 [ {remote_p_dir} ]目录下的文件")
                 traversal_file(sftp_c, local_p_dir, remote_p_dir, info["files"])
+            # 若为空文件夹则跳过
             elif info["type"] == "dir" and not info["files"]:
-                # 若为空文件夹则跳过
                 continue
+            # 不是文件夹则开始检查文件并下载
             else:
-                # 不是文件夹则开始检查文件并下载
                 # 检查文件格式
                 if not filename.endswith(DOWNLOAD_FILE_LAYOUT):
                     logger.error(f"[ {filename} ]文件格式有误，格式应为[ {DOWNLOAD_FILE_LAYOUT} ]")
