@@ -10,6 +10,7 @@ import sys
 import time
 import stat
 from typing import List
+from tqdm import tqdm
 
 import paramiko
 from paramiko.ssh_exception import SSHException
@@ -36,6 +37,7 @@ class SFTPClient:
             keep_alive: int = 60,
             private_key_path: str = None
     ):
+        self.pbar = None
         self.keep_alive = keep_alive
         self.hostname = hostname
         self.port = port
@@ -120,7 +122,10 @@ class SFTPClient:
             upload_logger.info(f"[ -START- ] 当前上传的文件是: [ {local_file} ]")
             self.upload_now = local_file
             time_start = time.time()
-            self.sftp.put(local_file, remote_file, callback=self.__print_upload_process)
+            local_file_size = os.path.getsize(local_file)
+            with tqdm(total=local_file_size, unit='B', unit_scale=True) as self.pbar:
+                self.sftp.put(local_file, remote_file, callback=self.__print_upload_process)
+            # self.sftp.put(local_file, remote_file, callback=self.__print_upload_process)
             time_end = time.time()
             upload_logger.info(f"[ -END- ] 文件上传完成(用时: {round(time_end - time_start, 0)}秒): [ {local_file} ] ")
             self.upload_now = None
@@ -151,7 +156,10 @@ class SFTPClient:
                 remote_path = self.format_remote_path(remote_path)
                 upload_logger.info(f"[ -START- ] 当前上传的文件是: [ {local_path} ]")
                 self.upload_now = local_path
-                self.sftp.put(local_path, remote_path, callback=self.__print_upload_process)
+                local_file_size = os.path.getsize(local_path)
+                with tqdm(total=local_file_size, unit='B', unit_scale=True) as self.pbar:
+                    self.sftp.put(local_path, remote_path, callback=self.__print_upload_process)
+                # self.sftp.put(local_path, remote_path, callback=self.__print_upload_process)
                 upload_logger.info(f"[ -END- ] 文件上传完成: [ {local_path} ]")
                 self.upload_now = None
                 upload_logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -168,8 +176,9 @@ class SFTPClient:
 
     def __print_upload_process(self, transferred, total):
         """输出上传进度回调函数"""
-        if transferred % (1024 * 1024 * self.process_print_frequency) == 0:
-            upload_logger.info(f"上传进度: {transferred} / {total}")
+        self.pbar.update(transferred - self.pbar.n)
+        # if transferred % (1024 * 1024 * self.process_print_frequency) == 0:
+        #     upload_logger.info(f"上传进度: {transferred} / {total}")
 
     def download_file(self, remote_file: str, local_file: str) -> bool:
         """
@@ -183,7 +192,10 @@ class SFTPClient:
             download_logger.info(f"[ -START- ] 当前下载的文件是: [ {remote_file} ]")
             self.download_now = remote_file
             time_start = time.time()
-            self.sftp.get(remote_file, local_file, callback=self.__print_download_process)
+            remote_file_size = self.get_remote_file_size(remote_file)
+            with tqdm(total=remote_file_size, unit='B', unit_scale=True) as self.pbar:
+                self.sftp.get(remote_file, local_file, callback=self.__print_download_process)
+            # self.sftp.get(remote_file, local_file, callback=self.__print_download_process)
             time_end = time.time()
             download_logger.info(
                 f"[ -END- ] 文件下载完成(用时: {round(time_end - time_start, 0)}秒): [ {remote_file} ]")
@@ -232,8 +244,9 @@ class SFTPClient:
 
     def __print_download_process(self, transferred, total):
         """输出下载进度回调函数"""
-        if transferred % (1024 * 1024 * self.process_print_frequency) == 0:
-            download_logger.info(f"下载进度: {transferred} / {total}")
+        self.pbar.update(transferred - self.pbar.n)
+        # if transferred % (1024 * 1024 * self.process_print_frequency) == 0:
+        #     download_logger.info(f"下载进度: {transferred} / {total}")
 
     def compare_files(self, local_file: str, remote_file: str) -> str:
         """
@@ -367,6 +380,22 @@ class SFTPClient:
         except FileNotFoundError:
             self.sftp.mkdir(remote_path)
             return True
+
+    def get_remote_file_size(self, remote_path) -> int:
+        """
+        获取远程文件的文件大小
+
+        :param remote_path:远程文件的绝对路径（例如：/path/file.txt）
+        :return:是否创建成功
+        """
+        try:
+            file_attr = self.sftp.stat(remote_path)
+            return file_attr.st_size
+        except SSHException as e:
+            logger.error(f"{repr(e)}")
+            self.reconnect()
+        except IOError:
+            return 0
 
     def get_remote_file_list(self, remote_path) -> List:
         """
