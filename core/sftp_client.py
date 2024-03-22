@@ -122,7 +122,7 @@ class SFTPClient:
             time_start = time.time()
             self.sftp.put(local_file, remote_file, callback=self.__print_upload_process)
             time_end = time.time()
-            upload_logger.info(f"[ -END- ] 文件上传完成(用时: {round(time_end-time_start, 0)}秒): [ {local_file} ] ")
+            upload_logger.info(f"[ -END- ] 文件上传完成(用时: {round(time_end - time_start, 0)}秒): [ {local_file} ] ")
             self.upload_now = None
             return True
         except FileNotFoundError:
@@ -185,7 +185,8 @@ class SFTPClient:
             time_start = time.time()
             self.sftp.get(remote_file, local_file, callback=self.__print_download_process)
             time_end = time.time()
-            download_logger.info(f"[ -END- ] 文件下载完成(用时: {round(time_end-time_start, 0)}秒): [ {remote_file} ]")
+            download_logger.info(
+                f"[ -END- ] 文件下载完成(用时: {round(time_end - time_start, 0)}秒): [ {remote_file} ]")
             self.download_now = None
             return True
         except FileNotFoundError:
@@ -426,6 +427,32 @@ class SFTPClient:
         except SSHException as e:
             logger.error(f"{repr(e)}")
             self.reconnect()
+        except Exception as e:
+            logger.error(f"{repr(e)}")
+            return {}
+
+    def get_local_all_file(self, local_path) -> dict:
+        """
+        递归获取本地目标路径下的所有文件夹和文件
+
+        :param local_path: 本地目标绝对路径
+        :return:该路径下的所有文件夹及文件
+        """
+        try:
+            file_dict = {}
+            # 检查本地目标路径是否存在
+            if os.path.exists(local_path):
+                file_list_sorted = sorted(os.listdir(local_path))
+                for item in file_list_sorted:
+                    item_path = os.path.join(local_path, item)
+                    if os.path.isdir(item_path):
+                        # 如果是子目录，则递归调用扫描子目录下的文件，加入列表
+                        files = self.get_local_all_file(item_path)
+                        file_dict[item] = {"type": "dir", "files": files}
+                    else:
+                        # 如果是文件，则加入列表
+                        file_dict[item] = {"type": "file"}
+            return file_dict
         except Exception as e:
             logger.error(f"{repr(e)}")
             return {}
